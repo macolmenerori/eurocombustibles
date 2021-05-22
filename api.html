@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Combustible</title>
+    <meta name="description" content="Resumen de precios de combustibles en la Unión Europea."/>
+    <meta name="keywords" content="api, fuel, union, europea, precios, carburante, combustible"/>
+    <meta name="author" content="Miguel A. Colmenero"/>
+    <meta name="copyright" content="Miguel A. Colmenero"/>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://www.miguelangelcolmenero.eu/css/cookie_consent.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
+<body onload="cargarCookies()">
+    
+    <div class="container">
+
+        <h1 class="mt-3">API precios combustible Unión Europea</h1>
+
+        <p class="font-italic">API que devuelve los precios de combustibles de los peíses de la Unión Europea.</p>
+
+        <h2>¿Cómo funciona?</h2>
+        <p>Todas las semanas la Unión Europea elabora el <a href="https://ec.europa.eu/energy/data-analysis/weekly-oil-bulletin_en" target="_blank">Boletín Petrolero Semanal</a> con la media de los precios de los combustibles en los países de la Unión Europea.<br>Un script en Python recoge los datos publicados por la Unión Europea, los trata y crea un fichero JSON con estos datos. Este script en Python se ejecuta todos los martes a las 9:00UTC actualizando los datos del JSON.</p>
+        <p>El JSON con los precios se puede recuperar en <code>https://www.miguelangelcolmenero.eu/combustible/fuel_prices.json</code></p>
+        <p>Los precios están en euros por mil litros (€/1000L) y contiene los precios de la gasolina de 95 octanos ('gasoline') y el gasóleo A ('diesel').</p>
+
+        <h2>El JSON</h2>
+        <p>El JSON tiene el siguiente formato:</p>
+        <div>
+        <p class="bg-light"><code>[</code><br><code>&nbsp&nbsp{</code><br><code>&nbsp&nbsp&nbsp&nbsp"country": "Austria",</code><br><code>&nbsp&nbsp&nbsp&nbsp"gasoline": "998"</code><br><code>&nbsp&nbsp&nbsp&nbsp"diesel": "996"</code><br><code>&nbsp&nbsp}</code><br><code>&nbsp&nbsp{ ... }</code><br><code>]</code></p>
+        </div>
+
+        <h2>Ejemplo</h2>
+        <p>Para recibir el JSON no hay más que ralizar una petición HTTP GET a <code>https://www.miguelangelcolmenero.eu/combustible/fuel_prices.json</code></p>
+        <p><strong>Ejemplo con curl:</strong></p>
+        <p class="bg-light"><code>curl https://www.miguelangelcolmenero.eu/combustible/fuel_prices.json</code></p>
+        <p><strong>Devuelve:</strong></p>
+        <p class="bg-light"><code>[{"country":"Austria","gasoline":"1 014","diesel":"991"},{"country":"Belgium","gasoline":"1 239,1","diesel":"1 242,9"},{"country":"Bulgaria","gasoline":"836,13","diesel":"836,44"},{"country":"Croatia","gasoline":"1 136,42","diesel":"1 089,62"},{"country":"Cyprus","gasoline":"962,48","diesel":"991,87"},{"country":"Czechia","gasoline":"982,55","diesel":"983,19"},{"country":"Denmark","gasoline":"1 381,53","diesel":"1 153,51"},{"country":"Estonia","gasoline":"1 176","diesel":"995"},{"country":"Finland","gasoline":"1 307","diesel":"1 143"},{"country":"France","gasoline":"1 288,63","diesel":"1 191,02"},{"country":"Germany","gasoline":"1 249","diesel":"1 075"},{"country":"Greece","gasoline":"1 364","diesel":"1 114"},{"country":"Hungary","gasoline":"984,46","diesel":"1 017,74"},{"country":"Ireland","gasoline":"1 215,8","diesel":"1 138"},{"country":"Italy","gasoline":"1 371,01","diesel":"1 260,4"},{"country":"Latvia","gasoline":"1 088,83","diesel":"998"},{"country":"Lithuania","gasoline":"1 010,2","diesel":"912"},{"country":"Luxembourg","gasoline":"1 031","diesel":"916"},{"country":"Malta","gasoline":"1 410","diesel":"1 280"},{"country":"Netherlands","gasoline":"1 518","diesel":"1 191"},{"country":"Poland","gasoline":"929,19","diesel":"940,02"},{"country":"Portugal","gasoline":"1 336","diesel":"1 172"},{"country":"Romania","gasoline":"873,34","diesel":"911,56"},{"country":"Slovakia","gasoline":"1 095","diesel":"1 011"},{"country":"Slovenia","gasoline":"1 001,49","diesel":"997,23"},{"country":"Spain","gasoline":"1 103,32","diesel":"1 007,95"},{"country":"Sweden","gasoline":"1 322,88","diesel":"1 341,34"}]</code></p>
+
+        <h2>Script en Python</h2>
+        <p>El script escrito en Python se puede descargar desde <a href="https://www.miguelangelcolmenero.eu/combustible/fuel_parser.py" target="_blank">aquí</a>. Requiere <a href="https://pandas.pydata.org/" target="_blank">Pandas</a> y <a href="https://numpy.org/" target="_blank">NumPy</a>.</p>
+        <p class="bg-light mb-5"><code>import pandas as pd</code><br><code>import numpy as np</code><br><code>import json</code><br><br><code># Coger datos oficiales y parsearlos</code><br><code>prices_raw = pd.read_excel('http://ec.europa.eu/energy/observatory/reports/latest_prices_with_taxes.xlsx', 'En In EURO', header=8, usecols='B:D', names=['country', 'gasoline', 'diesel'], nrows=27, dtype=str, encoding='unicode')</code><br><code># Crear un JSON</code><br><code>prices_JSON = prices_raw.to_json(orient='records', force_ascii=False)</code><br><br><code># Escribir el JSON</code><br><code>filename = "fuel_prices.json"</code><br><code>fichero = open(filename, 'w')</code><br><code>fichero.write(prices_JSON)</code><br><code>fichero.close()</code></p>
+
+    </div>
+
+    <div id="cookieConsent">
+        <div id="closeCookieConsent">x</div>
+        Este sitio usa cookies de Google. Si continuas navegando por este sitio las estás aceptando. <a href="https://policies.google.com/technologies/cookies?hl=es-ES" target="_blank">Política de privacidad</a><a class="cookieConsentOK">Aceptar</a>
+    </div>
+
+    <script type="text/javascript">
+        function cargarCookies(){
+            // Cookie consent
+            $(document).ready(function(){   
+                setTimeout(function () {
+                    $("#cookieConsent").fadeIn(200);
+                }, 4000);
+                $("#closeCookieConsent, .cookieConsentOK").click(function() {
+                    $("#cookieConsent").fadeOut(200);
+                }); 
+            });
+        }
+    </script>
+
+</body>
+</html>

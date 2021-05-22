@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combustibles</title>
+    <meta name="description" content="Resumen de precios de combustibles en la Unión Europea."/>
+    <meta name="keywords" content="combustible, fuel, union, europea, precios, carburante"/>
+    <meta name="author" content="Miguel A. Colmenero"/>
+    <meta name="copyright" content="Miguel A. Colmenero"/>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://miguelangelcolmenero.eu/css/cookie_consent.css">
+    
+</head>
+<body onload="cargarDatos()">
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="https://miguelangelcolmenero.eu/">Inicio</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item active">
+              <a class="nav-link" href="https://miguelangelcolmenero.eu/proyectos">Proyectos</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="https://miguelangelcolmenero.eu/contacto">Contacto</a>
+            </li>
+          </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <h1 class="text-center p-4">Precios de los combustibles en la Unión Europea</h1>
+
+        <p class="text-center pb-3 font-italic">Los precios se actualizan cada semana, impuestos incluídos.</p>
+
+        <table class="table table-hover text-center">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">País</th>
+                    <th scope="col">Gasolina (€/1000L)</th>
+                    <th scope="col">Gasóleo A (€/1000L)</th>
+                </tr>
+            </thead>
+            <tbody id="escribirData">
+            </tbody>
+        </table>
+
+    </div>
+
+    <p class="text-center font-italic"><strong>Fuente de datos:</strong> <a href="https://ec.europa.eu/energy/data-analysis/weekly-oil-bulletin_en" target="_blank">Boletín Petrolero de la Unión Europea.</a></p>
+
+    <p class="text-center mb-5">API de desarrollo propio. <a href="https://miguelangelcolmenero.eu/proyectos/combustible/api.html">Ver la documentación.</a></p>
+
+    <div id="cookieConsent">
+        <div id="closeCookieConsent">x</div>
+        Este sitio usa cookies de Google. Si continuas navegando por este sitio las estás aceptando. <a href="https://policies.google.com/technologies/cookies?hl=es-ES" target="_blank">Política de privacidad</a><a class="cookieConsentOK">Aceptar</a>
+    </div>
+    
+    <script type="text/javascript">
+        function cargarDatos(){
+            // Cookie consent
+            $(document).ready(function(){   
+                setTimeout(function () {
+                    $("#cookieConsent").fadeIn(200);
+                }, 4000);
+                $("#closeCookieConsent, .cookieConsentOK").click(function() {
+                    $("#cookieConsent").fadeOut(200);
+                }); 
+            });
+
+            var urlJSON = "https://miguelangelcolmenero.eu/combustible/fuel_prices.json";
+            $.getJSON(urlJSON, function(data){
+                //mostrarPrecios(data);
+                setTimeout(mostrarPrecios(data), 1000);
+            });
+        }
+
+        function mostrarPrecios(precios) {
+
+            precios.forEach(function(pais) {
+                var escribir = "";
+                escribir += "<tr><th scope='row'>" + pais.country;
+                escribir += "</th><td>" + pais.gasoline + "</td><td>" + pais.diesel + "</td></tr>";
+                $('#escribirData').append(escribir);
+            });
+        }
+    </script>
+</body>
+</html>
